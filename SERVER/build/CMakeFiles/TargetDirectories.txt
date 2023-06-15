@@ -1,4 +1,0 @@
-X:/CFTPChat/SERVER/build/CMakeFiles/fonts.dir
-X:/CFTPChat/SERVER/build/CMakeFiles/main.dir
-X:/CFTPChat/SERVER/build/CMakeFiles/edit_cache.dir
-X:/CFTPChat/SERVER/build/CMakeFiles/rebuild_cache.dir
