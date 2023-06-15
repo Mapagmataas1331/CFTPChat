@@ -5,7 +5,7 @@
 
 #define SIZE_BUF 512
 #define IP_ADDR "127.0.0.1"
-#define PORT 80
+#define PORT 800
 #define WWIDTH 96
 #define WHEIGHT 48
 
