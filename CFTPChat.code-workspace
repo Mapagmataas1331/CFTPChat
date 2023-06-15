@@ -1,5 +1,6 @@
 {
-	"folders": [
+	"folders":
+	[
 		{
 			"path": "CLIENT"
 		},
@@ -7,5 +8,26 @@
 			"path": "SERVER"
 		}
 	],
-	"settings": {}
+	"settings":
+	{
+		"workbench.colorTheme": "Shades of Purple",
+		"cmake.configureOnOpen": true,
+		"workbench.startupEditor": "none",
+		"files.autoSave": "onFocusChange",
+		"editor.fontSize": 12,
+		"editor.fontFamily": "'Lucida Console', monospace",
+		"editor.tabSize": 2,
+		"editor.cursorStyle": "block-outline",
+		"editor.wordWrap": "on",
+		"workbench.preferredDarkColorTheme": "Shades of Purple",
+		"workbench.preferredHighContrastColorTheme": "Shades of Purple (Super Dark)",
+		"workbench.preferredHighContrastLightColorTheme": "Monokai Pro (Filter Octagon)",
+		"workbench.preferredLightColorTheme": "Monokai Pro",
+		"workbench.iconTheme": "material-icon-theme",
+		"workbench.tips.enabled": false,
+		"workbench.tree.expandMode": "doubleClick",
+		"workbench.tree.indent": 4,
+		"breadcrumbs.icons": false,
+		"window.autoDetectHighContrast": false
+	}
 }
