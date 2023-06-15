@@ -5,7 +5,7 @@
 #include <windows.h>
 #include <dirent.h>
 #include <ctype.h>
-#include "fonts.h"
+#include "../fonts.h"
 
 #define MAX_CLIENTS 100
 #define MAX_USERNAME_LENGTH 12

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "fonts.h"
 #include <winsock2.h>
+#include "../fonts.h"
 
 #define SIZE_BUF 512
 #define IP_ADDR "127.0.0.1"
