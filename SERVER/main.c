@@ -15,7 +15,7 @@
 #define PORT 80
 #define WWIDTH 96
 #define WHEIGHT 48
-#define CMDS HBLU " Commands are:\n" HYEL "  shout " RES "- for chating with over users.\n" RES
+#define CMDS HBLU " Commands are:\n" HYEL "  shout " RES "- for chating with over users.\n" HBLU " ==-=-----=-==\n" RES
 
 void windowsize(int ww, int wh, int bw, int bh)
 {
@@ -183,7 +183,7 @@ int registerClient(ClientInfo* clientInfo, const char* username, const char* pas
 
       printf(HGRN " %s logged in as %s\n" RES, clientInfo->clientIp, username);
       char buff[SIZE_BUF];
-      sprintf(buff, "SKIP" HGRN "  You are successfully logged in.\n" HBLU " Welcome, " RES "%s" HBLU "!\n" RES "  10101010101010101010\n  10101010101010101010\n  10101010101010101010\n" CMDS HBLU " -------------\n" RES, username);
+      sprintf(buff, "SKIP" HGRN "  You are successfully logged in.\n" HBLU " Welcome, " RES "%s" HBLU "!\n" RES "  10101010101010101010\n  10101010101010101010\n  10101010101010101010\n" CMDS, username);
       send(clientInfo->clientSocket, buff, strlen(buff), 0);
     }
   }
@@ -196,7 +196,7 @@ int registerClient(ClientInfo* clientInfo, const char* username, const char* pas
 
     printf(HGRN " %s logged in as %s\n" RES, clientInfo->clientIp, username);
     char buff[SIZE_BUF];
-    sprintf(buff, "SKIP" HGRN "  You are successfully registered.\n" HBLU " Welcome, " RES "%s" HBLU "!\n" RES "  10101010101010101010\n  10101010101010101010\n  10101010101010101010\n" CMDS HBLU " -------------\n" RES, username);
+    sprintf(buff, "SKIP" HGRN "  You are successfully registered.\n" HBLU " Welcome, " RES "%s" HBLU "!\n" RES "  10101010101010101010\n  10101010101010101010\n  10101010101010101010\n" CMDS, username);
     send(clientInfo->clientSocket, buff, strlen(buff), 0);
 
     fprintf(file, "%s %s\n", clientInfo->clientName, clientInfo->clientPass);
