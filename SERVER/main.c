@@ -12,7 +12,7 @@
 #define MAX_PASSWORD_LENGTH 16
 #define SIZE_BUF 512
 #define IP_ADDR "127.0.0.1"
-#define PORT 800
+#define PORT 80
 #define WWIDTH 96
 #define WHEIGHT 48
 #define CMDS HBLU " Commands are:\n" HYEL "  shout " RES "- for chating with over users.\n" HBLU " ==-=-----=-==\n" RES
