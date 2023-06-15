@@ -1,0 +1,12 @@
+[
+{
+  "directory": "X:/CFTPChat/CLIENT/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe -g -o CMakeFiles\\fonts.dir\\main.c.obj -c X:\\CFTPChat\\CLIENT\\main.c",
+  "file": "X:\\CFTPChat\\CLIENT\\main.c"
+},
+{
+  "directory": "X:/CFTPChat/CLIENT/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe -g -o CMakeFiles\\main.dir\\main.c.obj -c X:\\CFTPChat\\CLIENT\\main.c",
+  "file": "X:\\CFTPChat\\CLIENT\\main.c"
+}
+]
