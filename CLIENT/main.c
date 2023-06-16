@@ -68,7 +68,7 @@ SOCKET getConn(char * ipAddr, int port)
     pause();
     exit(0);
   }
-  printf(HGRN "  Connected successfully!\n" RES);
+  printf(HGRN "  Connected successfully.\n" RES);
   return s;
 }
 
@@ -164,7 +164,14 @@ int main()
       case 0:
         for (int i = 4; i < len; i++)
         {
-          printf ("%c", msgbuff[i]);
+          if (msgbuff[i] == 'S' && msgbuff[i+1] == 'K' && msgbuff[i+2] == 'I' && msgbuff[i+3] == 'P')
+          {
+            i += 3;
+          }
+          else
+          {
+            printf ("%c", msgbuff[i]);
+          }
         }
         continue;
       case 1:

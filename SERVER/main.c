@@ -15,7 +15,7 @@
 #define PORT 80
 #define WWIDTH 96
 #define WHEIGHT 48
-#define CMDS HBLU " Commands are:\n" HYEL "  exit " RES "- to leave.\n" HYEL "  shout " RES "- for chating with over users.\n" HYEL "  file list " RES "- to see all files.\n" HBLU " ==-=-----=-==\n" RES
+#define CMDS HBLU " Commands are:\n" HYEL "  exit " RES "- to leave,\n" HYEL "  shout " RES "- for chating with over users,\n" HYEL "  file list " RES "- to see all files.\n" HBLU " ==-=-----=-==\n" RES
 
 void windowsize(int ww, int wh, int bw, int bh)
 {
@@ -61,11 +61,11 @@ void checkDir(char* dir)
 {
   if (!mkdir(dir))
   {
-    printf(" Created: " HYEL "\"%s\".\n" RES, dir);
+    printf(" Created: " HYEL "\"%s\"\n" RES, dir);
   }
   else
   {
-    printf(HYEL " \"%s\"" RES " already exists.\n", dir);
+    printf(HYEL " \"%s\"" RES " already exists\n", dir);
   }
 
 }
@@ -223,7 +223,7 @@ void processCommand(ClientInfo* clientInfo, const char* command)
     {
       if (clientArray[i] != NULL && clientArray[i] != clientInfo)
       {
-        printf(" Sending %s to %s.\n", &command[6], clientArray[i]->clientName);
+        printf(" Sending " HYEL "\"%s\"" RES " to " HYEL "%s\n" RES, &command[6], clientArray[i]->clientName);
         send(clientArray[i]->clientSocket, shoutBuff, strlen(shoutBuff), 0);
       }
     }
@@ -250,7 +250,7 @@ DWORD WINAPI handleClient(LPVOID lpParam)
   char buff[SIZE_BUF];
   int len;
 
-  printf(HBLU " New connection from %s.\n" RES, clientIp);
+  printf(HBLU " New connection from %s\n" RES, clientIp);
 
   sprintf(buff, HBLU " You are in CFTPChat!\n" RES " Enter your name " HYEL "(max %d)" RES ": ", MAX_USERNAME_LENGTH);
   send(clientSocket, buff, strlen(buff), 0);
@@ -299,8 +299,8 @@ DWORD WINAPI handleClient(LPVOID lpParam)
   }
 
   currentClients++;
-  printf(" %s's index: %d\n", username, clientIndex);
-  printf(" Current clients: %d\n", currentClients);
+  printf(HYEL " %s" RES "'s index: " HYEL "%d\n" RES, username, clientIndex);
+  printf(" Current clients: " HYEL "%d\n" RES, currentClients);
 
 
   char arg[128];
@@ -369,7 +369,7 @@ int main()
   }
 
   SOCKET listenSocket = getHost(IP_ADDR, PORT);
-  printf(HGRN "  Server started on %s.\n" RES, getSockIp(listenSocket));
+  printf(HGRN "  Server started on %s\n" RES, getSockIp(listenSocket));
 
   checkDir("data");
 
