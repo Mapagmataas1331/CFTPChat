@@ -136,7 +136,7 @@ int main()
   system("chcp 1251");
   windowsize(WWIDTH, WHEIGHT, WWIDTH, 999);
   skipsymbols((WWIDTH-6)/2);
-  printf(HYEL "Client\n\n" RES);
+  printf("Client\n\n");
 
   WSADATA wsaData;
   if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)

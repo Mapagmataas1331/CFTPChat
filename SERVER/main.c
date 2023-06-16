@@ -15,7 +15,7 @@
 #define PORT 80
 #define WWIDTH 96
 #define WHEIGHT 48
-#define CMDS HBLU " Commands are:\n" HYEL "  exit " RES "- to leave,\n" HYEL "  shout " RES "- for chating with over users,\n" HYEL "  file list " RES "- to see all files.\n" HBLU " ==-=-----=-==\n" RES
+#define CMDS HBLU " Commands are:\n" HYEL "  exit" RES " - to leave,\n" HYEL "  shout " HCYN "message" RES " - for chating with over users,\n" HYEL "  file list" RES " - to see all files.\n" HBLU " ==-=-----=-==\n" RES
 
 void windowsize(int ww, int wh, int bw, int bh)
 {
@@ -57,15 +57,23 @@ typedef struct
 ClientInfo* clientArray[MAX_CLIENTS];
 int currentClients = 0;
 
-void checkDir(char* dir)
+int checkDir(char* dir, int ifNotCreate)
 {
   if (!mkdir(dir))
   {
+    if (ifNotCreate)
+    {
+      rmdir(dir);
+      printf(" There is no " HYEL "\"%s\"\n" RES, dir);
+      return 0;
+    }
     printf(" Created: " HYEL "\"%s\"\n" RES, dir);
+    return 0;
   }
   else
   {
     printf(HYEL " \"%s\"" RES " already exists\n", dir);
+    return 1;
   }
 
 }
@@ -230,9 +238,73 @@ void processCommand(ClientInfo* clientInfo, const char* command)
     sprintf(shoutBuff, "SKIP Your message: " HYEL "\"%s\"" RES " was successfully shouted.\n", &command[6]);
     send(clientInfo->clientSocket, shoutBuff, strlen(shoutBuff), 0);
   }
-  else if (!strncmp(command, "file list ", 10))
+  else if (!strncmp(command, "file list", 9))
   {
+    DIR* dir;
+    struct dirent* entry;
+    char filelistBuff[SIZE_BUF];
 
+    char arg[128];
+    snprintf(arg, sizeof(arg), "data/%s", clientInfo->clientName);
+    if (!checkDir(arg, 1))
+    {
+      sprintf(filelistBuff, "SKIP" HRED "  You don't have any files yet.\n" RES);
+      send(clientInfo->clientSocket, filelistBuff, strlen(filelistBuff), 0);
+      return;
+    }
+
+    dir = opendir(arg);
+    if (dir == NULL)
+    {
+      printf(HRED "  Failed to open the folder.\n");
+    }
+
+    int isEmpty = 1;
+    while ((entry = readdir(dir)) != NULL)
+    {
+      if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+      {
+        continue;
+      }
+
+      isEmpty = 0;
+      break;
+    }
+
+    if (isEmpty)
+    {
+      sprintf(filelistBuff, "SKIP" HRED "  You don't have any files yet.\n" RES);
+      send(clientInfo->clientSocket, filelistBuff, strlen(filelistBuff), 0);
+      closedir(dir);
+      rmdir(arg);
+      printf(" Removed: " HYEL "\"%s\"\n" RES, arg);
+      return;
+    }
+
+    rewinddir(dir);
+
+    sprintf(filelistBuff, "SKIP Files are:\n", entry->d_name);
+    send(clientInfo->clientSocket, filelistBuff, strlen(filelistBuff), 0);
+
+    int count = 0;
+
+    while ((entry = readdir(dir)) != NULL)
+    {
+      if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+      {
+        continue;
+      }
+
+      sprintf(filelistBuff, "SKIP" HYEL "  %-2d " RES "%s\n", count, entry->d_name);
+      send(clientInfo->clientSocket, filelistBuff, strlen(filelistBuff), 0);
+
+      count++;
+    }
+
+    sprintf(filelistBuff, "SKIP ==--%2d--==\n", count);
+    send(clientInfo->clientSocket, filelistBuff, strlen(filelistBuff), 0);
+
+    closedir(dir);
   }
   else if (strncmp(command, "SKIP", 4))
   {
@@ -252,7 +324,7 @@ DWORD WINAPI handleClient(LPVOID lpParam)
 
   printf(HBLU " New connection from %s\n" RES, clientIp);
 
-  sprintf(buff, HBLU " You are in CFTPChat!\n" RES " Enter your name " HYEL "(max %d)" RES ": ", MAX_USERNAME_LENGTH);
+  sprintf(buff, HBLU " You are in CFTPChat!\n" RES " Enter your name " HYEL "(max %d)" RES ": " HCYN, MAX_USERNAME_LENGTH);
   send(clientSocket, buff, strlen(buff), 0);
   char username[MAX_USERNAME_LENGTH + 1];
   if ((len = recv(clientSocket, (char*)&username, SIZE_BUF, 0)) == SOCKET_ERROR) {
@@ -261,7 +333,7 @@ DWORD WINAPI handleClient(LPVOID lpParam)
   }
   username[MAX_USERNAME_LENGTH + 1] = '\0';
 
-  sprintf(buff, " Enter your password " HYEL "(max %d)" RES ": ", MAX_PASSWORD_LENGTH);
+  sprintf(buff, RES " Enter your password " HYEL "(max %d)" RES ": " HCYN, MAX_PASSWORD_LENGTH);
   send(clientSocket, buff, strlen(buff), 0);
   char password[MAX_PASSWORD_LENGTH + 1];
   if ((len = recv(clientSocket, (char*)&password, SIZE_BUF, 0)) == SOCKET_ERROR) {
@@ -299,13 +371,8 @@ DWORD WINAPI handleClient(LPVOID lpParam)
   }
 
   currentClients++;
-  printf(HYEL " %s" RES "'s index: " HYEL "%d\n" RES, username, clientIndex);
-  printf(" Current clients: " HYEL "%d\n" RES, currentClients);
-
-
-  char arg[128];
-  snprintf(arg, sizeof(arg), "data/%s", clientName);
-  checkDir(arg);
+  printf(HYEL " %s" RES "'s index: " HCYN "%d\n" RES, username, clientIndex);
+  printf(" Current clients: " HCYN "%d\n" RES, currentClients);
 
   do {
     sprintf(buff, " - " HYEL "(max 80)" RES ": ");
@@ -358,7 +425,7 @@ int main()
   system("chcp 1251");
   windowsize(WWIDTH, WHEIGHT, WWIDTH, 9999);
   skipsymbols((WWIDTH - 6) / 2);
-  printf(HYEL "Server\n\n" RES);
+  printf("Server\n\n");
 
   WSADATA wsaData;
   if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
@@ -371,7 +438,7 @@ int main()
   SOCKET listenSocket = getHost(IP_ADDR, PORT);
   printf(HGRN "  Server started on %s\n" RES, getSockIp(listenSocket));
 
-  checkDir("data");
+  checkDir("data", 0);
 
   while (1)
   {
