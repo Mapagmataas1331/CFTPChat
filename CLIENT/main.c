@@ -191,7 +191,7 @@ int main()
     }
     else
     {
-      sendToSock(connectionSocket, "\e[0;91mInput error", 19);
+      sendToSock(connectionSocket, "SKIP" HRED " Error on scanInput" RES, 34);
     }
 
     free(resp);

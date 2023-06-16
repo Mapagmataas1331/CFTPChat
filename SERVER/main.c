@@ -15,7 +15,7 @@
 #define PORT 80
 #define WWIDTH 96
 #define WHEIGHT 48
-#define CMDS HBLU " Commands are:\n" HYEL "  shout " RES "- for chating with over users.\n" HBLU " ==-=-----=-==\n" RES
+#define CMDS HBLU " Commands are:\n" HYEL "  exit " RES "- to leave.\n" HYEL "  shout " RES "- for chating with over users.\n" HYEL "  file list " RES "- to see all files.\n" HBLU " ==-=-----=-==\n" RES
 
 void windowsize(int ww, int wh, int bw, int bh)
 {
@@ -208,7 +208,13 @@ int registerClient(ClientInfo* clientInfo, const char* username, const char* pas
 
 void processCommand(ClientInfo* clientInfo, const char* command)
 {
-  if (!strncmp(command, "shout ", 6))
+  if (!strncmp(command, "exit", 4))
+  {
+    char buff[SIZE_BUF];
+    sprintf(buff, "EXIT");
+    send(clientInfo->clientSocket, buff, strlen(buff), 0);
+  }
+  else if (!strncmp(command, "shout ", 6))
   {
     char shoutBuff[SIZE_BUF];
     sprintf(shoutBuff, "SKIP - %s: %s\n", clientInfo->clientName, &command[6]);
@@ -228,7 +234,7 @@ void processCommand(ClientInfo* clientInfo, const char* command)
   {
 
   }
-  else
+  else if (strncmp(command, "SKIP", 4))
   {
     char buff[SIZE_BUF];
     sprintf(buff, "SKIP" HRED "  Unknown command: %s\n" RES, command);
