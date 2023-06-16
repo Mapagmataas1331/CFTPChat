@@ -19,15 +19,13 @@
 		"editor.tabSize": 2,
 		"editor.cursorStyle": "block-outline",
 		"editor.wordWrap": "on",
-		"workbench.preferredDarkColorTheme": "Shades of Purple",
-		"workbench.preferredHighContrastColorTheme": "Shades of Purple (Super Dark)",
-		"workbench.preferredHighContrastLightColorTheme": "Monokai Pro (Filter Octagon)",
-		"workbench.preferredLightColorTheme": "Monokai Pro",
 		"workbench.iconTheme": "material-icon-theme",
 		"workbench.tips.enabled": false,
 		"workbench.tree.expandMode": "doubleClick",
 		"workbench.tree.indent": 4,
 		"breadcrumbs.icons": false,
-		"window.autoDetectHighContrast": false
+		"window.autoDetectHighContrast": false,
+		"material-icon-theme.saturation": 0.8,
+		"material-icon-theme.opacity": 0.8
 	}
 }

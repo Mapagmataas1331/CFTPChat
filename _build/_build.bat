@@ -1,16 +1,16 @@
 @echo off
 title CFTPChat build
 
-cd SERVER/build
+cd ../SERVER/build
 ninja
 
 cd ../../CLIENT/build
 ninja
 
-cd ../../
+cd ../../_build
 
-echo f | xcopy SERVER\build\main.exe server.exe /y/q
-echo f | xcopy CLIENT\build\main.exe client.exe /y/q
+echo f | xcopy ..\SERVER\build\main.exe server.exe /y/q
+echo f | xcopy ..\CLIENT\build\main.exe client.exe /y/q
 
 start cmd /c server.exe
 echo Starting the SERVER . . .
