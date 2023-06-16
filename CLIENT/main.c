@@ -38,7 +38,8 @@ void pause()
   printf("\n" RES);
 }
 
-int processCommand(char *buff) {
+int processCommand(char *buff)
+{
   if (!strncmp(buff, "SKIP", 4))
     return 0;
   if (!strncmp(buff, "EXIT", 4))
@@ -165,13 +166,9 @@ int main()
         for (int i = 4; i < len; i++)
         {
           if (msgbuff[i] == 'S' && msgbuff[i+1] == 'K' && msgbuff[i+2] == 'I' && msgbuff[i+3] == 'P')
-          {
             i += 3;
-          }
           else
-          {
             printf ("%c", msgbuff[i]);
-          }
         }
         continue;
       case 1:
