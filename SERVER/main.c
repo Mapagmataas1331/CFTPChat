@@ -52,7 +52,8 @@ typedef struct
   char* clientIp;
   char clientName[MAX_USERNAME_LENGTH + 1];
   char clientPass[MAX_PASSWORD_LENGTH + 1];
-} ClientInfo;
+}
+ClientInfo;
 
 ClientInfo* clientArray[MAX_CLIENTS];
 int currentClients = 0;
@@ -283,7 +284,7 @@ void processCommand(ClientInfo* clientInfo, const char* command)
 
     rewinddir(dir);
 
-    sprintf(filelistBuff, "SKIP Files are:\n", entry->d_name);
+    sprintf(filelistBuff, "SKIP Files are:\n");
     send(clientInfo->clientSocket, filelistBuff, strlen(filelistBuff), 0);
 
     int count = 0;
@@ -307,7 +308,9 @@ void processCommand(ClientInfo* clientInfo, const char* command)
     closedir(dir);
   }
   else if (!strncmp(command, "file send ", 10)) {
-
+    char filesendBuff[SIZE_BUF];
+    sprintf(filesendBuff, "SEND%s\n", &command[10]);
+    send(clientInfo->clientSocket, filesendBuff, strlen(filesendBuff), 0);
   }
   else if (strncmp(command, "SKIP", 4))
   {

@@ -177,6 +177,13 @@ int main()
         printf(HRED "  Disconnected from the server.\n" RES);
         pause();
         return 1;
+      case 2:
+        printf ("  Sending file: ");
+        for (int i = 4; i < len; i++)
+        {
+          printf ("%c", msgbuff[i]);
+        }
+        continue;
       default:
         break;
       }
