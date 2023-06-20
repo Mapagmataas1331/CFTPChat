@@ -15,7 +15,7 @@
 #define PORT 80
 #define WWIDTH 96
 #define WHEIGHT 48
-#define CMDS HBLU " Commands are:\n" HYEL "  exit" RES " - to leave,\n" HYEL "  shout " HCYN "message" RES " - for chating with over users,\n" HYEL "  file list" RES " - to see all files.\n" HBLU " ==-=-----=-==\n" RES
+#define CMDS HBLU " Commands are:\n" HYEL "  exit" RES " - to leave,\n" HYEL "  shout " HCYN "message" RES " - for chating with over users,\n" HYEL "  file list" RES " - to see all files.\n" HYEL "  file send "  HCYN "file" RES " - to see all files.\n" HBLU " ==-=-----=-==\n" RES
 
 void windowsize(int ww, int wh, int bw, int bh)
 {
@@ -75,7 +75,6 @@ int checkDir(char* dir, int ifNotCreate)
     printf(HYEL " \"%s\"" RES " already exists\n", dir);
     return 1;
   }
-
 }
 
 SOCKET getHost(const char* ip, int port)
@@ -239,6 +238,7 @@ void processCommand(ClientInfo* clientInfo, const char* command)
     send(clientInfo->clientSocket, shoutBuff, strlen(shoutBuff), 0);
   }
   else if (!strncmp(command, "file list", 9))
+  
   {
     DIR* dir;
     struct dirent* entry;
@@ -305,6 +305,9 @@ void processCommand(ClientInfo* clientInfo, const char* command)
     send(clientInfo->clientSocket, filelistBuff, strlen(filelistBuff), 0);
 
     closedir(dir);
+  }
+  else if (!strncmp(command, "file send ", 10)) {
+
   }
   else if (strncmp(command, "SKIP", 4))
   {

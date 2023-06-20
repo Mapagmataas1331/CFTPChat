@@ -44,6 +44,8 @@ int processCommand(char *buff)
     return 0;
   if (!strncmp(buff, "EXIT", 4))
     return 1;
+  if (!strncmp(buff, "SEND", 4))
+    return 2;
   return INT_MAX;
 }
 
