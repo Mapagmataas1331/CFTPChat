@@ -179,7 +179,7 @@ int main()
         return 1;
       case 2:
         printf ("  Sending file: ");
-        for (int i = 4; i < len; i++)
+        for (int i = 5; i < len; i++)
         {
           printf ("%c", msgbuff[i]);
         }

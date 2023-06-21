@@ -21,7 +21,7 @@
 #define RUS_UPPER "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞß"
 #define DIGITS "0123456789"
 #define SYMBOLS "~!?@#$%^&-_+=,.;:'\"/\\|(){}[]<>"
-#define CMDS HBLU " Commands are:\n" HYEL "  exit" RES " - to leave,\n" HYEL "  shout " HCYN "message" RES " - for chating with over users,\n" HYEL "  file list" RES " - to see all files.\n" HYEL "  file send "  HCYN "file" RES " - to see all files.\n" HBLU " ==-=-----=-==\n" RES
+#define CMDS HBLU " Commands are:\n" HYEL "  exit" RES " - to leave,\n" HYEL "  shout " HCYN "message" RES " - for chating with over users,\n" HYEL "  file list" RES " - to see all files,\n" HYEL "  file send "  HCYN "file" RES " - to send file,\n" HYEL "  file get "  HCYN "file" RES " - to get file.\n" HBLU " ==-=-----=-==\n" RES
 
 void windowsize(int ww, int wh, int bw, int bh)
 {
@@ -179,12 +179,12 @@ int registerClient(ClientInfo* clientInfo, const char* username, const char* pas
     clientError(clientInfo->clientSocket, "Password exceeds the maximum length.");
     return 0;
   }
-    if (!checkSymbols(username, ENG_LOWER ENG_UPPER DIGITS))
+  if (!checkSymbols(username, ENG_LOWER ENG_UPPER DIGITS))
   {
     clientError(clientInfo->clientSocket, "The username must contain only English letters and numbers.");
     return 0;
   }
-    if (!checkSymbols(password, ENG_LOWER ENG_UPPER DIGITS SYMBOLS))
+  if (!checkSymbols(password, ENG_LOWER ENG_UPPER DIGITS SYMBOLS))
   {
     clientError(clientInfo->clientSocket, "The password must contain only English letters, numbers and symbols: \"" SYMBOLS "\".");
     return 0;
@@ -280,6 +280,14 @@ void processCommand(ClientInfo* clientInfo, const char* command)
     char shoutBuff[SIZE_BUF];
     sprintf(shoutBuff, "SKIP - %s: %s\n", clientInfo->clientName, &command[6]);
 
+    if (!checkSymbols(&command[6], ENG_LOWER ENG_UPPER RUS_LOWER RUS_UPPER DIGITS SYMBOLS " "))
+    {
+      printf(HRED " Message contains invalid characters\n" RES);
+      sprintf(shoutBuff, "SKIP" HRED "  Your message: \"%s\" contains invalid characters.\n" RES, &command[6]);
+      send(clientInfo->clientSocket, shoutBuff, strlen(shoutBuff), 0);
+      return;
+    }
+    
     for (int i = 0; i < currentClients; i++)
     {
       if (clientArray[i] != NULL && clientArray[i] != clientInfo)
@@ -359,9 +367,18 @@ void processCommand(ClientInfo* clientInfo, const char* command)
 
     closedir(dir);
   }
-  else if (!strncmp(command, "file send ", 10)) {
+  else if (!strncmp(command, "file send ", 10))
+  {
     char filesendBuff[SIZE_BUF];
-    sprintf(filesendBuff, "SEND%s\n", &command[10]);
+    if (!checkSymbols(&command[10], ENG_LOWER ENG_UPPER DIGITS SYMBOLS))
+    {
+      printf(HRED " Fille name contains invalid characters\n" RES);
+      sprintf(filesendBuff, "SKIP" HRED "  Your fille name: \"%s\" contains invalid characters.\n" RES, &command[10]);
+      send(clientInfo->clientSocket, filesendBuff, strlen(filesendBuff), 0);
+      return;
+    }
+
+    sprintf(filesendBuff, "SEND %s\n", &command[10]);
     send(clientInfo->clientSocket, filesendBuff, strlen(filesendBuff), 0);
   }
   else if (strncmp(command, "SKIP", 4))
@@ -494,7 +511,7 @@ int main()
   }
 
   SOCKET listenSocket = getHost(IP_ADDR, PORT);
-  printf(HGRN "  Server started on %s\n" RES, getSockIp(listenSocket));
+  printf(HGRN "  Server started on %s:%d\n" RES, getSockIp(listenSocket), PORT);
 
   checkDir("data", 0);
 
