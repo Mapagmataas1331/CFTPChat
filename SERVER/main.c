@@ -267,8 +267,13 @@ int registerClient(ClientInfo* clientInfo, const char* username, const char* pas
   return 1;
 }
 
+char* fileSend = NULL;
+
 void processCommand(ClientInfo* clientInfo, const char* command)
 {
+  if (fileSend == NULL)
+    fileSend = (char*)malloc(strlen(command) - 9);
+
   if (!strncmp(command, "exit", 4))
   {
     char buff[SIZE_BUF];
@@ -305,7 +310,7 @@ void processCommand(ClientInfo* clientInfo, const char* command)
     struct dirent* entry;
     char filelistBuff[SIZE_BUF];
 
-    char arg[128];
+    char arg[strlen(clientInfo->clientName) + 6];
     snprintf(arg, sizeof(arg), "data/%s", clientInfo->clientName);
     if (!checkDir(arg, 1))
     {
@@ -369,16 +374,68 @@ void processCommand(ClientInfo* clientInfo, const char* command)
   }
   else if (!strncmp(command, "file send ", 10))
   {
+    strcpy(fileSend, command + 10);
     char filesendBuff[SIZE_BUF];
-    if (!checkSymbols(&command[10], ENG_LOWER ENG_UPPER DIGITS SYMBOLS))
+    if (!checkSymbols(fileSend, ENG_LOWER ENG_UPPER DIGITS SYMBOLS))
     {
-      printf(HRED " Fille name contains invalid characters\n" RES);
-      sprintf(filesendBuff, "SKIP" HRED "  Your fille name: \"%s\" contains invalid characters.\n" RES, &command[10]);
+      printf(HRED " File name contains invalid characters\n" RES);
+      sprintf(filesendBuff, "SKIP" HRED "  Your file name: \"%s\" contains invalid characters.\n" RES, &command[10]);
       send(clientInfo->clientSocket, filesendBuff, strlen(filesendBuff), 0);
       return;
     }
 
-    sprintf(filesendBuff, "SEND %s\n", &command[10]);
+    sprintf(filesendBuff, "SEND %s\n", fileSend);
+    send(clientInfo->clientSocket, filesendBuff, strlen(filesendBuff), 0);
+  }
+  else if (!strncmp(command, "SAVE ", 5))
+  {
+    char filesaveBuff[SIZE_BUF];
+    char arg[strlen(clientInfo->clientName) + 6];
+    snprintf(arg, sizeof(arg), "data/%s", clientInfo->clientName);
+    checkDir(arg, 0);
+    char fileName[strlen(arg) + strlen(fileSend) + 1];
+    sprintf(fileName, "%s/%s", arg, fileSend);
+    FILE *file = fopen(fileName, "wb");
+    if (file == NULL)
+    {
+      printf(HRED "  Error on opening file: \"%s\".\n" RES, fileName);
+      free(fileSend);
+      return;
+    }
+
+    const char* fileData = &command[5];
+    size_t dataSize = strlen(fileData);
+    
+    if (fwrite(fileData, sizeof(char), dataSize, file) != dataSize)
+    {
+      printf(HRED "  Error on writing to file: \"%s\".\n" RES, fileName);
+      fclose(file);
+      free(fileSend);
+      return;
+    }
+
+    printf(" File: " HYEL "\"%s\"" RES " delivered successfully!\n", fileSend);
+    sprintf(filesaveBuff, "SKIP File: " HYEL "\"%s\"" RES " delivered successfully!\n", fileSend);
+    send(clientInfo->clientSocket, filesaveBuff, strlen(filesaveBuff), 0);
+
+    fclose(file);
+    free(fileSend);
+  }
+  else if (!strncmp(command, "file get ", 9))
+  {
+    char filesendBuff[SIZE_BUF];
+    if (!checkSymbols(&command[9], ENG_LOWER ENG_UPPER DIGITS SYMBOLS))
+    {
+      printf(HRED " File name contains invalid characters\n" RES);
+      sprintf(filesendBuff, "SKIP" HRED "  Your file name: \"%s\" contains invalid characters.\n" RES, &command[9]);
+      send(clientInfo->clientSocket, filesendBuff, strlen(filesendBuff), 0);
+      return;
+    }
+
+    size_t bytesRead;
+    FILE *file;
+
+    sprintf(filesendBuff, "GET %s\n", &command[9]);
     send(clientInfo->clientSocket, filesendBuff, strlen(filesendBuff), 0);
   }
   else if (strncmp(command, "SKIP", 4))
@@ -450,7 +507,7 @@ DWORD WINAPI handleClient(LPVOID lpParam)
   printf(" Current clients: " HCYN "%d\n" RES, currentClients);
 
   do {
-    sprintf(buff, " - " HYEL "(max 80)" RES ": ");
+    sprintf(buff, " -" HYEL "(max 80)" RES ": ");
     send(clientSocket, buff, strlen(buff), 0);
     if ((len = recv(clientSocket, (char*)&buff, SIZE_BUF, 0)) == SOCKET_ERROR)
     {

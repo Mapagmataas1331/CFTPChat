@@ -46,6 +46,8 @@ int processCommand(char *buff)
     return 1;
   if (!strncmp(buff, "SEND", 4))
     return 2;
+  if (!strncmp(buff, "GET", 3))
+    return 3;
   return INT_MAX;
 }
 
@@ -163,29 +165,58 @@ int main()
         exit(0);
       }
 
-      switch(processCommand((char*)&msgbuff)){
-      case 0:
-        for (int i = 4; i < len; i++)
-        {
-          if (msgbuff[i] == 'S' && msgbuff[i+1] == 'K' && msgbuff[i+2] == 'I' && msgbuff[i+3] == 'P')
-            i += 3;
-          else
-            printf ("%c", msgbuff[i]);
-        }
-        continue;
-      case 1:
-        printf(HRED "  Disconnected from the server.\n" RES);
-        pause();
-        return 1;
-      case 2:
-        printf ("  Sending file: ");
-        for (int i = 5; i < len; i++)
-        {
-          printf ("%c", msgbuff[i]);
-        }
-        continue;
-      default:
-        break;
+      char buffer[SIZE_BUF];
+      FILE *file;
+      size_t bytesRead;
+      char fileSend[len - 6];
+      char fileGet[len - 5];
+
+      switch(processCommand((char*)&msgbuff))
+      {
+        case 0:
+          for (int i = 4; i < len; i++)
+          {
+            if (msgbuff[i] == 'S' && msgbuff[i+1] == 'K' && msgbuff[i+2] == 'I' && msgbuff[i+3] == 'P')
+              i += 3;
+            else
+              printf ("%c", msgbuff[i]);
+          }
+          continue;
+        case 1:
+          printf(HRED "  Disconnected from the server.\n" RES);
+          pause();
+          return 1;
+        case 2:
+          for (int i = 5; i < len; i++)
+            fileSend[i - 5] = msgbuff[i];
+          fileSend[len - 6] = '\0';
+          file = fopen(fileSend, "rb");
+          if (file == NULL)
+          {
+            printf(HRED "  Error on opening file: \"%s\".\n" RES, fileSend);
+            continue;
+          }
+          sprintf(buffer, "SAVE ");
+          while ((bytesRead = fread(buffer + 5, sizeof(char), SIZE_BUF - 5, file)) > 0)
+          {
+            if (send(connectionSocket, buffer, bytesRead + 5, 0) != bytesRead + 5)
+            {
+              printf(HRED "  Error on sending file: \"%s\".\n" RES, fileSend);
+              fclose(file);
+              continue;
+            }
+          }
+          fclose(file);
+          printf(" File: " HYEL "\"%s\"" RES " sent!\n", fileSend);
+          continue;
+        case 3:
+          for (int i = 4; i < len; i++)
+            fileGet[i - 4] = msgbuff[i];
+          fileGet[len - 5] = '\0';
+          printf(fileGet);
+          continue;
+        default:
+          break;
       }
       for (int i = 0; i < len; i++)
       {
