@@ -15,6 +15,12 @@
 #define PORT 80
 #define WWIDTH 96
 #define WHEIGHT 48
+#define ENG_LOWER "abcdefghijklmnopqrstuvwxyz"
+#define ENG_UPPER "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+#define RUS_LOWER "àáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ"
+#define RUS_UPPER "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞß"
+#define DIGITS "0123456789"
+#define SYMBOLS "~!?@#$%%^&-_+=,.;:'\"/\\|(){}[]<>"
 #define CMDS HBLU " Commands are:\n" HYEL "  exit" RES " - to leave,\n" HYEL "  shout " HCYN "message" RES " - for chating with over users,\n" HYEL "  file list" RES " - to see all files.\n" HYEL "  file send "  HCYN "file" RES " - to see all files.\n" HBLU " ==-=-----=-==\n" RES
 
 void windowsize(int ww, int wh, int bw, int bh)
@@ -57,6 +63,34 @@ ClientInfo;
 
 ClientInfo* clientArray[MAX_CLIENTS];
 int currentClients = 0;
+
+int checkSymbols(const char* str, const char* symbols)
+{
+  if (str == NULL || symbols == NULL)
+    return 0;
+
+  while (*str != '\0')
+  {
+    int foundSymbol = 0;
+    const char* symbol = symbols;
+
+    while (*symbol != '\0')
+    {
+        if (*str == *symbol)
+        {
+          foundSymbol = 1;
+          break;
+        }
+        symbol++;
+    }
+    if (!foundSymbol)
+      return 0;
+    str++;
+  }
+
+  return 1;
+}
+
 
 int checkDir(char* dir, int ifNotCreate)
 {
