@@ -20,7 +20,7 @@
 #define RUS_LOWER "àáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ"
 #define RUS_UPPER "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞß"
 #define DIGITS "0123456789"
-#define SYMBOLS "~!?@#$%%^&-_+=,.;:'\"/\\|(){}[]<>"
+#define SYMBOLS "~!?@#$%^&-_+=,.;:'\"/\\|(){}[]<>"
 #define CMDS HBLU " Commands are:\n" HYEL "  exit" RES " - to leave,\n" HYEL "  shout " HCYN "message" RES " - for chating with over users,\n" HYEL "  file list" RES " - to see all files.\n" HYEL "  file send "  HCYN "file" RES " - to see all files.\n" HBLU " ==-=-----=-==\n" RES
 
 void windowsize(int ww, int wh, int bw, int bh)
@@ -91,7 +91,6 @@ int checkSymbols(const char* str, const char* symbols)
   return 1;
 }
 
-
 int checkDir(char* dir, int ifNotCreate)
 {
   if (!mkdir(dir))
@@ -110,6 +109,16 @@ int checkDir(char* dir, int ifNotCreate)
     printf(HYEL " \"%s\"" RES " already exists\n", dir);
     return 1;
   }
+}
+
+void clientError(SOCKET client, char* msg)
+{
+  char buff[SIZE_BUF];
+  printf(HRED "  %s\n" RES, msg);
+  sprintf(buff, "SKIP" HRED "  %s\n" RES, msg);
+  send(client, buff, strlen(buff), 0);
+  sprintf(buff, "EXIT");
+  send(client, buff, strlen(buff), 0);
 }
 
 SOCKET getHost(const char* ip, int port)
@@ -149,25 +158,35 @@ SOCKET getHost(const char* ip, int port)
 
 int registerClient(ClientInfo* clientInfo, const char* username, const char* password)
 {
+  if (strlen(username) < 3)
+  {
+    clientError(clientInfo->clientSocket, "Username is missing characters. (minimum 3)");
+    return 0;
+  }
   if (strlen(username) > MAX_USERNAME_LENGTH + 1)
   {
-    printf(HRED "  Username exceeds the maximum length.\n" RES);
-    char buff[SIZE_BUF];
-    sprintf(buff, "SKIP" HRED "  Username exceeds the maximum length.\n" RES);
-    send(clientInfo->clientSocket, buff, strlen(buff), 0);
-    sprintf(buff, "EXIT");
-    send(clientInfo->clientSocket, buff, strlen(buff), 0);
+    clientError(clientInfo->clientSocket, "Username exceeds the maximum length.");
     return 0;
   }
 
+  if (strlen(username) < 3)
+  {
+    clientError(clientInfo->clientSocket, "Username is missing characters. (minimum 3)");
+    return 0;
+  }
   if (strlen(password) > MAX_PASSWORD_LENGTH + 1)
   {
-    printf(HRED "  Password exceeds the maximum length.\n" RES);
-    char buff[SIZE_BUF];
-    sprintf(buff, "SKIP" HRED "  Password exceeds the maximum length.\n" RES);
-    send(clientInfo->clientSocket, buff, strlen(buff), 0);
-    sprintf(buff, "EXIT");
-    send(clientInfo->clientSocket, buff, strlen(buff), 0);
+    clientError(clientInfo->clientSocket, "Password exceeds the maximum length.");
+    return 0;
+  }
+    if (!checkSymbols(username, ENG_LOWER ENG_UPPER DIGITS))
+  {
+    clientError(clientInfo->clientSocket, "The username must contain only English letters and numbers.");
+    return 0;
+  }
+    if (!checkSymbols(password, ENG_LOWER ENG_UPPER DIGITS SYMBOLS))
+  {
+    clientError(clientInfo->clientSocket, "The password must contain only English letters, numbers and symbols: \"" SYMBOLS "\".");
     return 0;
   }
 
@@ -273,7 +292,6 @@ void processCommand(ClientInfo* clientInfo, const char* command)
     send(clientInfo->clientSocket, shoutBuff, strlen(shoutBuff), 0);
   }
   else if (!strncmp(command, "file list", 9))
-  
   {
     DIR* dir;
     struct dirent* entry;
