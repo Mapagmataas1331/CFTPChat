@@ -10,22 +10,8 @@
 	],
 	"settings":
 	{
-		"workbench.colorTheme": "Shades of Purple",
 		"cmake.configureOnOpen": true,
 		"workbench.startupEditor": "none",
-		"files.autoSave": "onFocusChange",
-		"editor.fontSize": 12,
-		"editor.fontFamily": "'Lucida Console', monospace",
 		"editor.tabSize": 2,
-		"editor.cursorStyle": "block-outline",
-		"editor.wordWrap": "on",
-		"workbench.iconTheme": "material-icon-theme",
-		"workbench.tips.enabled": false,
-		"workbench.tree.expandMode": "doubleClick",
-		"workbench.tree.indent": 4,
-		"breadcrumbs.icons": false,
-		"window.autoDetectHighContrast": false,
-		"material-icon-theme.saturation": 0.8,
-		"material-icon-theme.opacity": 0.8
 	}
 }
